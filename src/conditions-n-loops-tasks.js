@@ -351,9 +351,46 @@ function getBalanceIndex(arr) {
  *          [10, 9,  8,  7]
  *        ]
  */
-function getSpiralMatrix(/* size */) {
-  throw new Error('Not implemented');
+function getSpiralMatrix(size) {
+    const matrix = new Array(size);
+    for (let i = 0; i < size; i++) {
+        matrix[i] = new Array(size);
+        for (let j = 0; j < size; j++) {
+            matrix[i][j] = 0;
+        }
+    }
+
+    let num = 1, top = 0, bottom = size - 1, left = 0, right = size - 1;
+
+    while (num <= size * size) {
+        for (let i = left; i <= right; i++) {
+            matrix[top][i] = num;
+            num += 1;
+        }
+        top++;
+        for (let i = top; i <= bottom; i++) {
+            matrix[i][right] = num;
+            num += 1;
+        }
+        right--;
+        for (let i = right; i >= left; i--) {
+            matrix[bottom][i] = num;
+            num += 1;
+        }
+        bottom--;
+        for (let i = bottom; i >= top; i--) {
+            matrix[i][left] = num;
+            num += 1;
+        }
+        left++;
+    }
+
+    return matrix;
 }
+
+console.log(getSpiralMatrix(3));
+console.log(getSpiralMatrix(4));
+
 
 /**
  * Rotates a matrix by 90 degrees clockwise in place.
@@ -434,8 +471,39 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+
+function shuffleChar(str, iterations) {
+  const n = str.length;
+  if (n <= 1 || iterations === 0) return str;
+
+  const effectiveIterations = n === 1 ? 1 : Math.ceil(Math.log2(n));
+  const normalizedIterations = iterations % effectiveIterations;
+
+  const result = Array(n);
+  let indices = Array.from({ length: n }, (_, i) => i);
+
+  for (let iter = 0; iter < normalizedIterations; iter += 1) {
+    const tempIndices = Array(n);
+    let oddIndex = 0;
+    let evenIndex = 0;
+
+    for (let i = 0; i < n; i += 1) {
+      if (i % 2 === 0) {
+        tempIndices[evenIndex] = indices[i];
+        evenIndex += 1;
+      } else {
+        tempIndices[oddIndex] = indices[i];
+        oddIndex += 1;
+      }
+    }
+    indices = tempIndices;
+  }
+
+  for (let i = 0; i < n; i += 1) {
+    result[indices[i]] = str[i];
+  }
+
+  return result.join('');
 }
 
 /**
@@ -455,8 +523,52 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const digits = [];
+  let temp = number;
+
+  while (temp > 0) {
+    digits.unshift(temp % 10);
+    temp = Math.floor(temp / 10);
+  }
+
+  let i;
+  for (i = digits.length - 2; i >= 0; i -= 1) {
+    if (digits[i] < digits[i + 1]) {
+      break;
+    }
+  }
+
+  if (i < 0) return number;
+
+  let j;
+
+  for (j = digits.length - 1; j > i; j -= 1) {
+    if (digits[j] > digits[i]) {
+      break;
+    }
+  }
+
+  const tempDigit = digits[i];
+  digits[i] = digits[j];
+  digits[j] = tempDigit;
+
+  for (let k = i + 1; k < digits.length; k += 1) {
+    for (let l = k + 1; l < digits.length; l += 1) {
+      if (digits[k] > digits[l]) {
+        const swap = digits[k];
+        digits[k] = digits[l];
+        digits[l] = swap;
+      }
+    }
+  }
+
+  let result = 0;
+  for (let k = 0; k < digits.length; k += 1) {
+    result = result * 10 + digits[k];
+  }
+
+  return result;
 }
 
 module.exports = {
